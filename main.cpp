@@ -183,7 +183,7 @@ int main(void)
     // Setup for draw call
     // =================================================================
     auto mvpLocation = glGetUniformLocation(program, "mvp");
-    std::chrono::time_point<std::chrono::steady_clock> startTime, endTime;
+    std::chrono::steady_clock::time_point startTime, endTime;
 
     // =================================================================
     // Setup transformation matrices
@@ -211,7 +211,7 @@ int main(void)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         model = glm::rotate(model, glm::radians(0.05f * time), glm::vec3(0.0f, 1.0f, 0.0f));
-        auto mvp = projection * view * model;
+        auto mvp = projection * model * view;
 
         glUseProgram(program);
         glBindVertexArray(vao);
@@ -230,4 +230,69 @@ int main(void)
     glfwTerminate();
 
     exit(EXIT_SUCCESS);
+}
+
+struct ObjectCoordinates
+{
+    glm::vec4 position;
+
+    ObjectCoordinates(glm::vec4 pos) :
+        position(pos)
+    {
+    }
+};
+
+struct WorldCoordiantes
+{
+  private:
+    glm::vec4 position;
+
+    WorldCoordiantes(glm::vec4 pos) :
+        position(pos)
+    {
+    }
+    friend class ObjectToWorld;
+    friend class WorldToCamera;
+};
+
+struct CameraCoordinates
+{
+    glm::vec4 position;
+
+    CameraCoordinates(glm::vec4 pos) :
+        position(pos)
+    {
+    }
+};
+
+class ObjectToWorld
+{
+  private:
+    glm::mat4 transform;
+
+  public:
+    WorldCoordiantes operator*(const ObjectCoordinates& rhs)
+    {
+        return WorldCoordiantes(transform * rhs.position);
+    }
+};
+
+class WorldToCamera
+{
+  private:
+    glm::mat4 transform;
+
+  public:
+    CameraCoordinates operator*(const WorldCoordiantes& rhs)
+    {
+        return CameraCoordinates(transform * rhs.position);
+    }
+};
+
+void test()
+{
+    auto oc = ObjectCoordinates(glm::vec4(1, 0, 0, 0));
+    auto otw = ObjectToWorld();
+    auto cs = CameraCoordinates(glm::vec4(1, 0, 0, 0));
+    auto wc = otw * cs;
 }
