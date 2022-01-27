@@ -164,7 +164,7 @@ int main(void)
     glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(colors[0]), colors.data(), GL_STATIC_DRAW);
 
     // =================================================================
-    // Bind VBOs to VAO
+    // Bind VBOs to VAO, and buffers to locations
     // =================================================================
     glBindVertexArray(vao);
 
@@ -183,17 +183,22 @@ int main(void)
     // Setup for draw call
     // =================================================================
     auto mvpLocation = glGetUniformLocation(program, "mvp");
+    std::chrono::time_point<std::chrono::steady_clock> startTime, endTime;
 
+    // =================================================================
+    // Setup transformation matrices
+    // =================================================================
     glm::mat4 projection = glm::perspective(glm::radians(70.0f), (float)WIDTH / (float)HEIGHT, 0.01f, 1000.0f);
 
     auto cameraPos = glm::vec3(0, 0, 2);
     auto up = glm::vec3(0, 1, 0);
     auto view = glm::lookAt(cameraPos, glm::vec3(0, 0, 0), up);
 
-    std::chrono::time_point<std::chrono::steady_clock> startTime, endTime;
-
     auto model = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f));
 
+    // =================================================================
+    // Render loop
+    // =================================================================
     while (!glfwWindowShouldClose(window))
     {
         endTime = std::chrono::high_resolution_clock::now();
@@ -209,9 +214,7 @@ int main(void)
         auto mvp = projection * view * model;
 
         glUseProgram(program);
-
         glBindVertexArray(vao);
-
         glUniformMatrix4fv(mvpLocation, 1, GL_FALSE, glm::value_ptr(mvp));
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
