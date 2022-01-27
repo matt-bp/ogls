@@ -168,12 +168,12 @@ int main(void)
     // =================================================================
     glBindVertexArray(vao);
 
-    // Explicit
+    // hard code location
     glBindBuffer(GL_ARRAY_BUFFER, positionVBO);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-    // Implicit
+    // Ask for location
     auto colorLocation = glGetAttribLocation(program, "inColor");
     glBindBuffer(GL_ARRAY_BUFFER, colorVBO);
     glEnableVertexAttribArray(colorLocation);
