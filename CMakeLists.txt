@@ -52,3 +52,5 @@ target_link_libraries(
     glfw
     glad
 )
+
+set_property(TARGET ${EXEC_NAME} PROPERTY CXX_STANDARD 17)

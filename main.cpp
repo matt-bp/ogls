@@ -183,7 +183,7 @@ int main(void)
     // Setup for draw call
     // =================================================================
     auto mvpLocation = glGetUniformLocation(program, "mvp");
-    std::chrono::steady_clock::time_point startTime, endTime;
+    std::chrono::high_resolution_clock::time_point startTime, endTime;
 
     // =================================================================
     // Setup transformation matrices
@@ -211,7 +211,7 @@ int main(void)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         model = glm::rotate(model, glm::radians(0.05f * time), glm::vec3(0.0f, 1.0f, 0.0f));
-        auto mvp = projection * model * view;
+        auto mvp = projection * view * model;
 
         glUseProgram(program);
         glBindVertexArray(vao);
